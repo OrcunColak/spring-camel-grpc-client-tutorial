@@ -12,6 +12,8 @@ public class CamelProducerRoute extends RouteBuilder {
         from("timer://grpc-timer?period=10000")
                 .log("Timer Started")// Use a timer to trigger the gRPC request every 10 seconds
                 .setBody(constant(BanksService.Empty.getDefaultInstance())) // Set the body to an Empty request object
+                // server is listening on port 50051
+                // for the service name we are using fully qualified class name
                 .to("grpc://localhost:50051/dev.shared.resources.grpc.AccountService?method=GetAllAccounts&synchronous=true")
                 .split(body()) // The response is a stream, so we split it into individual Account objects
                 .log("Received account details: ${body}")
